@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUsername = exports.updatePassword = exports.deleteUser = exports.getUser = void 0;
+exports.updateUsername = exports.updatePassword = exports.deleteUser = exports.getUserById = exports.getUser = void 0;
 const encrypt_1 = require("../lib/encrypt");
 const verifyCredentials_1 = require("../utils/verifyCredentials");
 const errors_1 = require("../errors");
@@ -29,6 +29,21 @@ function getUser(req, res) {
     });
 }
 exports.getUser = getUser;
+function getUserById(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { id } = req.body;
+            const response = yield (0, users_1.getUserByIdDB)(id);
+            if (!response)
+                throw new Error();
+            res.status(200).json({ user: response });
+        }
+        catch (err) {
+            (0, errors_1.genericError)(res);
+        }
+    });
+}
+exports.getUserById = getUserById;
 function deleteUser(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -36,7 +51,7 @@ function deleteUser(req, res) {
             const response = yield (0, users_1.deleteUserDB)(id);
             if (!response)
                 throw new Error();
-            res.send(200).json({ message: "The user was deleted." });
+            res.status(200).json({ message: "The user was deleted." });
         }
         catch (err) {
             (0, errors_1.genericError)(res);

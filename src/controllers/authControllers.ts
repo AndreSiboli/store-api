@@ -1,8 +1,13 @@
 import { Request, Response } from "express";
 import { compare } from "../lib/encrypt";
-import { createUserDB, getUserById } from "../services/users";
+import {
+  createUserDB,
+  getUserByEmailDB,
+  getUserByIdDB,
+  getUsernameDB,
+} from "../services/users";
 import { authorizationFailure, genericError } from "../errors";
-import { validateRefreshToken } from "../lib/token";
+import { validateRefreshToken, validateToken } from "../lib/token";
 import {
   createTokenCookie,
   createRefreshTokenCookie,
@@ -33,7 +38,6 @@ export async function verifyLogin(req: Request, res: Response) {
 
     createTokenCookie(user.id, res);
     const refreshToken = await createRefreshTokenCookie(user.id, res);
-  
     if (!refreshToken) throw new Error();
 
     const saveInDB = await saveRefreshTokenDB({
@@ -42,7 +46,15 @@ export async function verifyLogin(req: Request, res: Response) {
     });
     if (!saveInDB) throw new Error();
 
-    res.status(200).json({ messeage: "Login successfully" });
+    const userData = user.toObject({
+      transform: (doc, ret) => {
+        delete ret.password;
+        delete ret.__v;
+        return ret;
+      },
+    });
+
+    res.status(200).json({ user: userData, messeage: "Login successfully" });
   } catch (err) {
     authorizationFailure(res);
   }
@@ -51,6 +63,11 @@ export async function verifyLogin(req: Request, res: Response) {
 export async function verifyRegister(req: Request, res: Response) {
   try {
     const { email, username, password, repassword } = req.body;
+
+    if (await getUsernameDB(username))
+      throw new Error("This user already exists");
+    if (await getUserByEmailDB(email))
+      throw new Error("This email already exists");
 
     if (!checkEmail(email)) throw new Error();
     if (!checkUsername(username)) throw new Error();
@@ -61,7 +78,7 @@ export async function verifyRegister(req: Request, res: Response) {
 
     return res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
-    genericError(res);
+    genericError(res, err as Error);
   }
 }
 
@@ -70,7 +87,7 @@ export async function verifyRefreshToken(req: Request, res: Response) {
     const isValidToken = validateRefreshToken(req, res);
     if (!isValidToken) throw new Error();
 
-    const user = await getUserById(req.body.id);
+    const user = await getUserByIdDB(req.body.id);
     if (!user) throw new Error();
 
     const old_refresh_token = getRefreshTokenFromCookie(req, res);
@@ -107,4 +124,13 @@ export async function verifyLogout(req: Request, res: Response) {
   res.clearCookie("refresh_auth");
 
   res.status(200).json({ message: "You were disconected." });
+}
+
+export async function verifyToken(req: Request, res: Response) {
+  try {
+    if (!validateToken(req, res)) throw new Error();
+    res.status(200).json({ message: "User is authenticated" });
+  } catch (err) {
+    authorizationFailure(res);
+  }
 }

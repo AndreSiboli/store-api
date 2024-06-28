@@ -4,11 +4,14 @@ import {
   getUser,
   updateUsername,
   updatePassword,
+  getUserById,
 } from "../controllers/usersControllers";
 
 const router = express.Router();
 
-router.get("/:user", getUser);
+router.get("/", getUserById);
+
+router.get("/user/:user", getUser);
 
 router.delete("/", deleteUser);
 

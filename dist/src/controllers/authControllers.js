@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyLogout = exports.verifyRefreshToken = exports.verifyRegister = exports.verifyLogin = void 0;
+exports.verifyToken = exports.verifyLogout = exports.verifyRefreshToken = exports.verifyRegister = exports.verifyLogin = void 0;
 const encrypt_1 = require("../lib/encrypt");
 const users_1 = require("../services/users");
 const errors_1 = require("../errors");
@@ -36,7 +36,14 @@ function verifyLogin(req, res) {
             });
             if (!saveInDB)
                 throw new Error();
-            res.status(200).json({ messeage: "Login successfully" });
+            const userData = user.toObject({
+                transform: (doc, ret) => {
+                    delete ret.password;
+                    delete ret.__v;
+                    return ret;
+                },
+            });
+            res.status(200).json({ user: userData, messeage: "Login successfully" });
         }
         catch (err) {
             (0, errors_1.authorizationFailure)(res);
@@ -48,6 +55,10 @@ function verifyRegister(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const { email, username, password, repassword } = req.body;
+            if (yield (0, users_1.getUsernameDB)(username))
+                throw new Error("This user already exists");
+            if (yield (0, users_1.getUserByEmailDB)(email))
+                throw new Error("This email already exists");
             if (!(0, verifyCredentials_1.checkEmail)(email))
                 throw new Error();
             if (!(0, verifyCredentials_1.checkUsername)(username))
@@ -60,7 +71,7 @@ function verifyRegister(req, res) {
             return res.status(201).json({ message: "User registered successfully" });
         }
         catch (err) {
-            (0, errors_1.genericError)(res);
+            (0, errors_1.genericError)(res, err);
         }
     });
 }
@@ -71,7 +82,7 @@ function verifyRefreshToken(req, res) {
             const isValidToken = (0, token_1.validateRefreshToken)(req, res);
             if (!isValidToken)
                 throw new Error();
-            const user = yield (0, users_1.getUserById)(req.body.id);
+            const user = yield (0, users_1.getUserByIdDB)(req.body.id);
             if (!user)
                 throw new Error();
             const old_refresh_token = (0, cookie_1.getRefreshTokenFromCookie)(req, res);
@@ -111,3 +122,16 @@ function verifyLogout(req, res) {
     });
 }
 exports.verifyLogout = verifyLogout;
+function verifyToken(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            if (!(0, token_1.validateToken)(req, res))
+                throw new Error();
+            res.status(200).json({ message: "User is authenticated" });
+        }
+        catch (err) {
+            (0, errors_1.authorizationFailure)(res);
+        }
+    });
+}
+exports.verifyToken = verifyToken;

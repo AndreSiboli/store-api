@@ -4,6 +4,7 @@ import {
   verifyLogout,
   verifyRefreshToken,
   verifyRegister,
+  verifyToken,
 } from "../controllers/authControllers";
 
 const router = express.Router();
@@ -12,7 +13,9 @@ router.post("/login", verifyLogin);
 
 router.post("/register", verifyRegister);
 
-router.get("/logout", verifyLogout)
+router.get("/logout", verifyLogout);
+
+router.get("/token", verifyToken);
 
 router.post("/refresh-token", verifyRefreshToken);
 

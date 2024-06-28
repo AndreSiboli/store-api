@@ -5,6 +5,7 @@ import { alredyExists, genericError, notFoundError } from "../errors";
 import {
   deleteUserDB,
   getPasswordDB,
+  getUserByIdDB,
   getUserDB,
   getUsernameDB,
   updatePasswordDB,
@@ -23,13 +24,25 @@ export async function getUser(req: Request, res: Response) {
   }
 }
 
+export async function getUserById(req: Request, res: Response) {
+  try {
+    const { id } = req.body;
+    const response = await getUserByIdDB(id);
+    if (!response) throw new Error();
+    
+    res.status(200).json({ user: response });
+  } catch (err) {
+    genericError(res);
+  }
+}
+
 export async function deleteUser(req: Request, res: Response) {
   try {
     const { id } = req.body;
     const response = await deleteUserDB(id);
     if (!response) throw new Error();
 
-    res.send(200).json({ message: "The user was deleted." });
+    res.status(200).json({ message: "The user was deleted." });
   } catch (err) {
     genericError(res);
   }

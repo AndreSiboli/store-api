@@ -9,5 +9,6 @@ const router = express_1.default.Router();
 router.post("/login", authControllers_1.verifyLogin);
 router.post("/register", authControllers_1.verifyRegister);
 router.get("/logout", authControllers_1.verifyLogout);
+router.get("/token", authControllers_1.verifyToken);
 router.post("/refresh-token", authControllers_1.verifyRefreshToken);
 exports.default = router;

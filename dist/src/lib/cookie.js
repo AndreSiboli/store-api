@@ -20,6 +20,8 @@ function createTokenCookie(id, res) {
     res.cookie("auth", obj2Str, {
         httpOnly: true,
         secure: false,
+        sameSite: "lax",
+        path: "/",
         maxAge: 30 * 60 * 1000,
     });
 }

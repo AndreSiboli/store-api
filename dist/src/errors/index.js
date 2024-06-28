@@ -27,7 +27,7 @@ function alredyExists(res, name) {
 exports.alredyExists = alredyExists;
 function genericError(res, err) {
     return res.status(500).json({
-        message: `An error has occurred.`,
+        message: (err === null || err === void 0 ? void 0 : err.message) || `An error has occurred.`,
     });
 }
 exports.genericError = genericError;

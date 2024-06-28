@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createUserDB = exports.getUserById = exports.getUsernameDB = exports.getPasswordDB = exports.updateUsernameDB = exports.updatePasswordDB = exports.deleteUserDB = exports.getUserDB = void 0;
+exports.createUserDB = exports.getUserByIdDB = exports.getUserByEmailDB = exports.getUsernameDB = exports.getPasswordDB = exports.updateUsernameDB = exports.updatePasswordDB = exports.deleteUserDB = exports.getUserDB = void 0;
 const users_1 = __importDefault(require("../models/users"));
 const encrypt_1 = require("../lib/encrypt");
 function getUserDB(username) {
@@ -72,7 +72,17 @@ function getUsernameDB(username) {
     });
 }
 exports.getUsernameDB = getUsernameDB;
-function getUserById(id) {
+function getUserByEmailDB(email) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield users_1.default
+            .findOne({ email })
+            .select("-password -__v")
+            .then((res) => (res ? res : null))
+            .catch((err) => null);
+    });
+}
+exports.getUserByEmailDB = getUserByEmailDB;
+function getUserByIdDB(id) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield users_1.default
             .findById(id)
@@ -81,7 +91,7 @@ function getUserById(id) {
             .catch((err) => null);
     });
 }
-exports.getUserById = getUserById;
+exports.getUserByIdDB = getUserByIdDB;
 function createUserDB(data) {
     return __awaiter(this, void 0, void 0, function* () {
         const { email, username, password } = data;

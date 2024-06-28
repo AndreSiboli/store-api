@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateRefreshToken = exports.createRefreshToken = exports.createToken = void 0;
+exports.validateRefreshToken = exports.validateToken = exports.createRefreshToken = exports.createToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const tokenConfig_1 = __importDefault(require("../config/tokenConfig"));
 const cookie_1 = require("./cookie");
@@ -21,6 +21,17 @@ function createRefreshToken(id) {
     return refreshToken;
 }
 exports.createRefreshToken = createRefreshToken;
+function validateToken(req, res) {
+    const token = (0, cookie_1.getTokenFromCookie)(req, res);
+    if (!token)
+        return false;
+    return jsonwebtoken_1.default.verify(token, tokenConfig_1.default.secret_token, (err, decoded) => {
+        if (err)
+            return false;
+        return true;
+    });
+}
+exports.validateToken = validateToken;
 function validateRefreshToken(req, res) {
     const refresh = (0, cookie_1.getRefreshTokenFromCookie)(req, res);
     if (!refresh)

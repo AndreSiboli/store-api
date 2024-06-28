@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import jwt, { JwtPayload as DefaultJwtPayload } from "jsonwebtoken";
 import config from "../config/tokenConfig";
-import { getRefreshTokenFromCookie } from "./cookie";
+import { getRefreshTokenFromCookie, getTokenFromCookie } from "./cookie";
 
 interface JwtPayload extends DefaultJwtPayload {
   id: string;
@@ -22,6 +22,16 @@ export function createRefreshToken(id: string) {
   });
 
   return refreshToken;
+}
+
+export function validateToken(req: Request, res: Response) {
+  const token = getTokenFromCookie(req, res);
+  if (!token) return false;
+
+  return jwt.verify(token, config.secret_token, (err, decoded) => {
+    if (err) return false;
+    return true;
+  });
 }
 
 export function validateRefreshToken(req: Request, res: Response) {

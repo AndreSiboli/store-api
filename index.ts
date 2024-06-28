@@ -4,7 +4,6 @@ import "dotenv/config";
 import auth from "./src/routes/auth";
 import users from "./src/routes/users";
 import token from "./src/middlewares/token";
-import { manageTokenExpirationDB } from "./src/services/auth";
 import cookieparser from "cookie-parser";
 import cors from "cors";
 
@@ -15,8 +14,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieparser());
 app.use(
   cors({
+    origin: "http://localhost:3000",
     credentials: true,
-    // origin: "http://localhost:3001",
   })
 );
 

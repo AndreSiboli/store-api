@@ -46,7 +46,15 @@ export async function getUsernameDB(username: string) {
     .catch((err) => null);
 }
 
-export async function getUserById(id: string) {
+export async function getUserByEmailDB(email: string) {
+  return await usersModel
+    .findOne({ email })
+    .select("-password -__v")
+    .then((res) => (res ? res : null))
+    .catch((err) => null);
+}
+
+export async function getUserByIdDB(id: string) {
   return await usersModel
     .findById(id)
     .select("-password -__v")

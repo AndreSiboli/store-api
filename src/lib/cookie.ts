@@ -14,6 +14,8 @@ export function createTokenCookie(id: string, res: Response) {
   res.cookie("auth", obj2Str, {
     httpOnly: true,
     secure: false,
+    sameSite: "lax",
+    path: "/",
     maxAge: 30 * 60 * 1000,
   });
 }
