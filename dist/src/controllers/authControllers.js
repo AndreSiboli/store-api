@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyToken = exports.verifyLogout = exports.verifyRefreshToken = exports.verifyRegister = exports.verifyLogin = void 0;
+require("dotenv/config");
 const encrypt_1 = require("../lib/encrypt");
 const users_1 = require("../services/users");
 const errors_1 = require("../errors");
@@ -116,8 +117,14 @@ function verifyLogout(req, res) {
                 refresh_token: refresh,
             });
         }
-        res.clearCookie("auth");
-        res.clearCookie("refresh_auth");
+        res.clearCookie("auth", {
+            httpOnly: true,
+            secure: true,
+        });
+        res.clearCookie("refresh_auth", {
+            httpOnly: true,
+            secure: true,
+        });
         res.status(200).json({ message: "You were disconected." });
     });
 }

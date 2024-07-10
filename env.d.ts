@@ -7,6 +7,7 @@ declare global {
       API_EXPIRES_REFRESH_TOKEN: string;
       API_SALT: string;
       API_DB_URL: string;
+      API_SITE_URL: string;
     }
   }
 }

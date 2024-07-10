@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import "dotenv/config";
 import { compare } from "../lib/encrypt";
 import {
   createUserDB,
@@ -120,8 +121,14 @@ export async function verifyLogout(req: Request, res: Response) {
     });
   }
 
-  res.clearCookie("auth");
-  res.clearCookie("refresh_auth");
+  res.clearCookie("auth", {
+    httpOnly: true,
+    secure: true,
+  });
+  res.clearCookie("refresh_auth", {
+    httpOnly: true,
+    secure: true,
+  });
 
   res.status(200).json({ message: "You were disconected." });
 }
