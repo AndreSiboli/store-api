@@ -22,7 +22,6 @@ app.use((0, cors_1.default)({
     credentials: true,
 }));
 app.get("/", (req, res) => {
-    console.log('papel');
     return res.json({ message: "It is on air." });
 });
 app.use("/", auth_1.default);

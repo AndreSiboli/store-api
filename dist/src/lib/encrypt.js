@@ -13,17 +13,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.compare = exports.encrypt = void 0;
-const bcrypt_1 = __importDefault(require("bcrypt"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const encryptConfig_1 = __importDefault(require("../config/encryptConfig"));
 function encrypt(password) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield bcrypt_1.default.hash(password, encryptConfig_1.default.salt);
+        return yield bcryptjs_1.default.hash(password, encryptConfig_1.default.salt);
     });
 }
 exports.encrypt = encrypt;
 function compare(password, passwordHash) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield bcrypt_1.default.compare(password, passwordHash);
+        return yield bcryptjs_1.default.compare(password, passwordHash);
     });
 }
 exports.compare = compare;

@@ -22,7 +22,6 @@ app.use(
 );
 
 app.get("/", (req, res) => {
-  console.log('papel')
   return res.json({ message: "It is on air." });
 });
 
