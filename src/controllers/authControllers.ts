@@ -124,10 +124,12 @@ export async function verifyLogout(req: Request, res: Response) {
   res.clearCookie("auth", {
     httpOnly: true,
     secure: true,
+    sameSite: "none",
   });
   res.clearCookie("refresh_auth", {
     httpOnly: true,
     secure: true,
+    sameSite: "none",
   });
 
   res.status(200).json({ message: "You were disconected." });
