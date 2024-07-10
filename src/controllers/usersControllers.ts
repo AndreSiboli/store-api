@@ -11,6 +11,8 @@ import {
   updatePasswordDB,
   updateUsernameDB,
 } from "../services/users";
+import { getIdFromRefreshToken, getRefreshTokenFromCookie } from "../lib/cookie";
+import { deleteRefreshTokenDB } from "../services/auth";
 
 export async function getUser(req: Request, res: Response) {
   try {
@@ -29,7 +31,7 @@ export async function getUserById(req: Request, res: Response) {
     const { id } = req.body;
     const response = await getUserByIdDB(id);
     if (!response) throw new Error();
-    
+
     res.status(200).json({ user: response });
   } catch (err) {
     genericError(res);
@@ -41,6 +43,18 @@ export async function deleteUser(req: Request, res: Response) {
     const { id } = req.body;
     const response = await deleteUserDB(id);
     if (!response) throw new Error();
+
+    const refresh = getRefreshTokenFromCookie(req, res);
+
+    if (refresh) {
+      deleteRefreshTokenDB({
+        user_id: getIdFromRefreshToken(refresh),
+        refresh_token: refresh,
+      });
+    }
+
+    res.clearCookie("auth");
+    res.clearCookie("refresh_auth");
 
     res.status(200).json({ message: "The user was deleted." });
   } catch (err) {
@@ -55,9 +69,10 @@ export async function updatePassword(req: Request, res: Response) {
     if (!lastHash) throw new Error();
 
     const isEqual = await compare(lastPassword, lastHash);
-    if (!isEqual) throw new Error();
+    if (!isEqual) throw new Error("Your last password is wrong.");
 
-    if (!checkPassword(password, repassword)) throw new Error();
+    if (!checkPassword(password, repassword))
+      throw new Error("Your new passoword doesn't match");
 
     const encryptedPass = await encrypt(password);
 
@@ -66,7 +81,7 @@ export async function updatePassword(req: Request, res: Response) {
 
     res.status(200).json({ message: "Updated successfully." });
   } catch (err) {
-    genericError(res);
+    genericError(res, err as Error);
   }
 }
 

@@ -14,6 +14,8 @@ const encrypt_1 = require("../lib/encrypt");
 const verifyCredentials_1 = require("../utils/verifyCredentials");
 const errors_1 = require("../errors");
 const users_1 = require("../services/users");
+const cookie_1 = require("../lib/cookie");
+const auth_1 = require("../services/auth");
 function getUser(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -51,6 +53,15 @@ function deleteUser(req, res) {
             const response = yield (0, users_1.deleteUserDB)(id);
             if (!response)
                 throw new Error();
+            const refresh = (0, cookie_1.getRefreshTokenFromCookie)(req, res);
+            if (refresh) {
+                (0, auth_1.deleteRefreshTokenDB)({
+                    user_id: (0, cookie_1.getIdFromRefreshToken)(refresh),
+                    refresh_token: refresh,
+                });
+            }
+            res.clearCookie("auth");
+            res.clearCookie("refresh_auth");
             res.status(200).json({ message: "The user was deleted." });
         }
         catch (err) {
@@ -68,9 +79,9 @@ function updatePassword(req, res) {
                 throw new Error();
             const isEqual = yield (0, encrypt_1.compare)(lastPassword, lastHash);
             if (!isEqual)
-                throw new Error();
+                throw new Error("Your last password is wrong.");
             if (!(0, verifyCredentials_1.checkPassword)(password, repassword))
-                throw new Error();
+                throw new Error("Your new passoword doesn't match");
             const encryptedPass = yield (0, encrypt_1.encrypt)(password);
             const response = yield (0, users_1.updatePasswordDB)({ id, password: encryptedPass });
             if (!response)
@@ -78,7 +89,7 @@ function updatePassword(req, res) {
             res.status(200).json({ message: "Updated successfully." });
         }
         catch (err) {
-            (0, errors_1.genericError)(res);
+            (0, errors_1.genericError)(res, err);
         }
     });
 }

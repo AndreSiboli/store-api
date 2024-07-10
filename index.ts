@@ -3,6 +3,8 @@ import "./src/models/db";
 import "dotenv/config";
 import auth from "./src/routes/auth";
 import users from "./src/routes/users";
+import favorites from "./src/routes/favorites";
+import cart from "./src/routes/cart";
 import token from "./src/middlewares/token";
 import cookieparser from "cookie-parser";
 import cors from "cors";
@@ -20,10 +22,13 @@ app.use(
 );
 
 app.get("/", (req, res) => {
+  console.log('papel')
   return res.json({ message: "It is on air." });
 });
 
 app.use("/", auth);
+app.use("/cart", token, cart);
+app.use("/favorites", token, favorites);
 app.use("/users", token, users);
 
 const PORT = process.env.API_PORT || 8080;

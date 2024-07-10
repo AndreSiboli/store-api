@@ -2,6 +2,24 @@ import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
 
+const favoriteObj = {
+  _id: {
+    type: Number,
+    required: true,
+  },
+};
+
+const cartObj = {
+  _id: {
+    type: Number,
+    required: true,
+  },
+  how_many: {
+    type: Number,
+    default: 1,
+  },
+};
+
 const users = new Schema({
   email: {
     type: String,
@@ -17,6 +35,15 @@ const users = new Schema({
     required: true,
     unique: true,
   },
+
+  favorites: {
+    type: [favoriteObj],
+  },
+
+  cart: {
+    type: [cartObj],
+  },
+
   createdAt: {
     type: Date,
     required: true,
