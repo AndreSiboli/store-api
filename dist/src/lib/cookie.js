@@ -19,9 +19,8 @@ function createTokenCookie(id, res) {
     const obj2Str = JSON.stringify({ token: (0, token_1.createToken)(id) });
     res.cookie("auth", obj2Str, {
         httpOnly: true,
-        secure: false,
-        sameSite: "lax",
-        path: "/",
+        secure: true,
+        sameSite: "none",
         maxAge: 30 * 60 * 1000,
     });
 }
@@ -32,7 +31,8 @@ function createRefreshTokenCookie(id, res) {
         const obj2Str = JSON.stringify({ refreshToken: refresh });
         res.cookie("refresh_auth", obj2Str, {
             httpOnly: true,
-            secure: false,
+            secure: true,
+            sameSite: "none",
             maxAge: 24 * 60 * 60 * 1000,
         });
         return refresh;

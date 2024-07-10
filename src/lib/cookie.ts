@@ -13,9 +13,8 @@ export function createTokenCookie(id: string, res: Response) {
 
   res.cookie("auth", obj2Str, {
     httpOnly: true,
-    secure: false,
-    sameSite: "lax",
-    path: "/",
+    secure: true,
+    sameSite: "none",
     maxAge: 30 * 60 * 1000,
   });
 }
@@ -26,7 +25,8 @@ export async function createRefreshTokenCookie(id: string, res: Response) {
 
   res.cookie("refresh_auth", obj2Str, {
     httpOnly: true,
-    secure: false,
+    secure: true,
+    sameSite: "none",
     maxAge: 24 * 60 * 60 * 1000,
   });
 
