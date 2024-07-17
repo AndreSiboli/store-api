@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieparser());
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.API_SITE_URL,
     credentials: true,
   })
 );
@@ -31,4 +31,6 @@ app.use("/favorites", token, favorites);
 app.use("/users", token, users);
 
 const PORT = process.env.API_PORT || 8080;
-app.listen(PORT);
+app.listen(PORT, () => {
+  console.log(`API is on port ${PORT}!`);
+});

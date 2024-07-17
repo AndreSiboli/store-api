@@ -28,7 +28,7 @@ function verifyLogin(req, res) {
             if (!(yield (0, encrypt_1.compare)(password, user.password)))
                 throw new Error();
             (0, cookie_1.createTokenCookie)(user.id, res);
-            const refreshToken = yield (0, cookie_1.createRefreshTokenCookie)(user.id, res);
+            const refreshToken = (0, cookie_1.createRefreshTokenCookie)(user.id, res);
             if (!refreshToken)
                 throw new Error();
             const saveInDB = yield (0, auth_1.saveRefreshTokenDB)({
@@ -90,7 +90,7 @@ function verifyRefreshToken(req, res) {
             if (!old_refresh_token)
                 throw new Error();
             (0, cookie_1.createTokenCookie)(user.id, res);
-            const refreshToken = yield (0, cookie_1.createRefreshTokenCookie)(user.id, res);
+            const refreshToken = (0, cookie_1.createRefreshTokenCookie)(user.id, res);
             if (!refreshToken)
                 throw new Error();
             const response = yield (0, auth_1.updateRefreshTokenDB)({
@@ -103,7 +103,7 @@ function verifyRefreshToken(req, res) {
             res.status(200).json({ message: "Refresh token created successfully." });
         }
         catch (err) {
-            (0, errors_1.authorizationFailure)(res);
+            res.status(403).json({});
         }
     });
 }

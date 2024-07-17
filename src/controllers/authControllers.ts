@@ -38,7 +38,7 @@ export async function verifyLogin(req: Request, res: Response) {
     if (!(await compare(password, user.password))) throw new Error();
 
     createTokenCookie(user.id, res);
-    const refreshToken = await createRefreshTokenCookie(user.id, res);
+    const refreshToken = createRefreshTokenCookie(user.id, res);
     if (!refreshToken) throw new Error();
 
     const saveInDB = await saveRefreshTokenDB({
@@ -87,17 +87,17 @@ export async function verifyRefreshToken(req: Request, res: Response) {
   try {
     const isValidToken = validateRefreshToken(req, res);
     if (!isValidToken) throw new Error();
-
+    
     const user = await getUserByIdDB(req.body.id);
     if (!user) throw new Error();
-
+    
     const old_refresh_token = getRefreshTokenFromCookie(req, res);
     if (!old_refresh_token) throw new Error();
-
+    
     createTokenCookie(user.id, res);
-    const refreshToken = await createRefreshTokenCookie(user.id, res);
+    const refreshToken = createRefreshTokenCookie(user.id, res);
     if (!refreshToken) throw new Error();
-
+    
     const response = await updateRefreshTokenDB({
       user_id: user.id,
       refresh_token: refreshToken,
@@ -107,7 +107,7 @@ export async function verifyRefreshToken(req: Request, res: Response) {
 
     res.status(200).json({ message: "Refresh token created successfully." });
   } catch (err) {
-    authorizationFailure(res);
+    res.status(403).json({});
   }
 }
 

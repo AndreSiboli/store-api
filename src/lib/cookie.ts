@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { createRefreshToken, createToken } from "./token";
+import config from "../config/cookieConfig";
 import jwt, { JwtPayload as DefaultJwtPayload } from "jsonwebtoken";
 
 interface JwtPayload extends DefaultJwtPayload {
@@ -14,20 +15,20 @@ export function createTokenCookie(id: string, res: Response) {
   res.cookie("auth", obj2Str, {
     httpOnly: true,
     secure: true,
-    sameSite: "none",
-    maxAge: 30 * 60 * 1000,
+    sameSite: config.cookieSameSite,
+    maxAge: config.cookieAgeToken,
   });
 }
 
-export async function createRefreshTokenCookie(id: string, res: Response) {
+export function createRefreshTokenCookie(id: string, res: Response) {
   const refresh = createRefreshToken(id);
   const obj2Str = JSON.stringify({ refreshToken: refresh });
 
   res.cookie("refresh_auth", obj2Str, {
     httpOnly: true,
     secure: true,
-    sameSite: "none",
-    maxAge: 24 * 60 * 60 * 1000,
+    sameSite: config.cookieSameSite,
+    maxAge: config.cookieAgeRefreshToken,
   });
 
   return refresh;

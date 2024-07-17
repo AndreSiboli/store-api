@@ -18,7 +18,7 @@ app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
 app.use((0, cors_1.default)({
-    origin: "http://localhost:3000",
+    origin: process.env.API_SITE_URL,
     credentials: true,
 }));
 app.get("/", (req, res) => {
@@ -29,4 +29,6 @@ app.use("/cart", token_1.default, cart_1.default);
 app.use("/favorites", token_1.default, favorites_1.default);
 app.use("/users", token_1.default, users_1.default);
 const PORT = process.env.API_PORT || 8080;
-app.listen(PORT);
+app.listen(PORT, () => {
+    console.log(`API is on port ${PORT}!`);
+});
